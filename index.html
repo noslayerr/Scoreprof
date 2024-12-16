@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoreprof</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+        }
+
+        header {
+            background-color: #4CAF50;
+            padding: 10px 0;
+            color: white;
+        }
+
+        .container {
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 800px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        form input, form textarea, form button, form select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        form button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #45a049;
+        }
+
+        .references {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .reference {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input, .search-bar button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .search-bar button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        .search-bar button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Scoreprof</h1>
+        <p>Consulta y comparte referencias de tus profesores</p>
+    </header>
+
+    <div class="container">
+        <!-- Barra de búsqueda -->
+        <div class="search-bar">
+            <input type="text" id="search" placeholder="Buscar profesor por nombre">
+            <button onclick="searchReferences()">Buscar</button>
+        </div>
+
+        <!-- Formulario -->
+        <form id="referenceForm" onsubmit="addReference(event)">
+            <input type="text" id="professor" placeholder="Nombre del profesor" required>
+            <input type="text" id="career" placeholder="Carrera" required>
+            <input type="text" id="semester" placeholder="Semestre" required>
+            <input type="text" id="subject" placeholder="Materia impartida" required>
+            <input type="number" id="rating" placeholder="Puntuación (1-10)" min="1" max="10" required>
+            <textarea id="reference" placeholder="Escribe tu referencia" rows="3" required></textarea>
+            <button type="submit">Enviar</button>
+        </form>
+
+        <!-- Referencias -->
+        <div id="references" class="references">
+            <h2>Referencias</h2>
+        </div>
+    </div>
+
+    <script>
+        const references = [];
+
+        function addReference(event) {
+            event.preventDefault();
+
+            const professor = document.getElementById('professor').value;
+            const career = document.getElementById('career').value;
+            const semester = document.getElementById('semester').value;
+            const subject = document.getElementById('subject').value;
+            const rating = document.getElementById('rating').value;
+            const referenceText = document.getElementById('reference').value;
+
+            if (containsBadWords(referenceText)) {
+                alert("Tu referencia contiene palabras inapropiadas. Por favor, corrígela.");
+                return;
+            }
+
+            const reference = { professor, career, semester, subject, rating, referenceText };
+            references.push(reference);
+            displayReferences(references);
+
+            document.getElementById('referenceForm').reset();
+        }
+
+        function displayReferences(filtered) {
+            const container = document.getElementById('references');
+            container.innerHTML = '<h2>Referencias</h2>';
+            filtered.forEach(ref => {
+                container.innerHTML += `
+                    <div class="reference">
+                        <p><strong>Profesor:</strong> ${ref.professor}</p>
+                        <p><strong>Carrera:</strong> ${ref.career}</p>
+                        <p><strong>Semestre:</strong> ${ref.semester}</p>
+                        <p><strong>Materia:</strong> ${ref.subject}</p>
+                        <p><strong>Puntuación:</strong> ${ref.rating}</p>
+                        <p><strong>Referencia:</strong> ${ref.referenceText}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function searchReferences() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const filtered = references.filter(ref => ref.professor.toLowerCase().includes(query));
+            displayReferences(filtered);
+        }
+
+        function containsBadWords(text) {
+            const badWords = ["maldición1", "maldición2", "maldición3"]; // Agrega aquí palabras prohibidas
+            return badWords.some(word => text.toLowerCase().includes(word));
+        }
+    </script>
+</body>
