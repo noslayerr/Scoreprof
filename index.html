@@ -7,124 +7,170 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
             background-color: #f4f4f9;
             color: #333;
             text-align: center;
         }
+
         header {
             background-color: #4CAF50;
             padding: 10px 0;
             color: white;
         }
+
         .container {
             margin: 20px auto;
             padding: 20px;
             max-width: 800px;
             background: white;
             border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        form input, form textarea, form button {
-            display: block;
-            margin: 10px auto;
-            padding: 10px;
-            width: 90%;
-            max-width: 500px;
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        .reference {
-            margin: 10px;
+
+        form input, form textarea, form button, form select {
             padding: 10px;
-            background-color: #e4e4e4;
-            border-radius: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        form button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #45a049;
+        }
+
+        .references {
+            margin-top: 20px;
             text-align: left;
+        }
+
+        .reference {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input, .search-bar button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .search-bar button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        .search-bar button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
     <header>
         <h1>Scoreprof</h1>
-        <p>Consulta y comparte opiniones sobre tus profesores</p>
+        <p>Consulta y comparte referencias de tus profesores</p>
     </header>
 
     <div class="container">
-        <h2>Agregar Referencia</h2>
-        <form id="referenceForm">
+        <!-- Barra de búsqueda -->
+        <div class="search-bar">
+            <input type="text" id="search" placeholder="Buscar profesor por nombre">
+            <button onclick="searchReferences()">Buscar</button>
+        </div>
+
+        <!-- Formulario -->
+        <form id="referenceForm" onsubmit="addReference(event)">
             <input type="text" id="professor" placeholder="Nombre del profesor" required>
             <input type="text" id="career" placeholder="Carrera" required>
             <input type="text" id="semester" placeholder="Semestre" required>
             <input type="text" id="subject" placeholder="Materia impartida" required>
-            <input type="number" id="rating" min="1" max="10" placeholder="Puntuación (1-10)" required>
+            <input type="number" id="rating" placeholder="Puntuación (1-10)" min="1" max="10" required>
             <textarea id="reference" placeholder="Escribe tu referencia" rows="3" required></textarea>
             <button type="submit">Enviar</button>
         </form>
 
-        <h2>Referencias</h2>
-        <div id="references"></div>
+        <!-- Referencias -->
+        <div id="references" class="references">
+            <h2>Referencias</h2>
+        </div>
     </div>
 
-    <!-- Firebase SDK con Analytics -->
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js"></script>
     <script>
-        // Configuración de Firebase (Pega tu configuración aquí)
-        const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_AUTH_DOMAIN",
-            databaseURL: "TU_DATABASE_URL",
-            projectId: "TU_PROJECT_ID",
-            storageBucket: "TU_STORAGE_BUCKET",
-            messagingSenderId: "TU_MESSAGING_SENDER_ID",
-            appId: "TU_APP_ID",
-            measurementId: "TU_MEASUREMENT_ID"
-        };
+        const references = [];
 
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const analytics = firebase.analytics(app);
+        function addReference(event) {
+            event.preventDefault();
 
-        const form = document.getElementById('referenceForm');
-        const referencesDiv = document.getElementById('references');
-
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
             const professor = document.getElementById('professor').value;
             const career = document.getElementById('career').value;
             const semester = document.getElementById('semester').value;
             const subject = document.getElementById('subject').value;
             const rating = document.getElementById('rating').value;
-            const reference = document.getElementById('reference').value;
+            const referenceText = document.getElementById('reference').value;
 
-            // Guardar en Firebase
-            database.ref('references/').push({
-                professor,
-                career,
-                semester,
-                subject,
-                rating,
-                reference
-            });
+            if (containsBadWords(referenceText)) {
+                alert("Tu referencia contiene palabras inapropiadas. Por favor, corrígela.");
+                return;
+            }
 
-            form.reset();
-        });
+            const reference = { professor, career, semester, subject, rating, referenceText };
+            references.push(reference);
+            displayReferences(references);
 
-        // Cargar referencias
-        database.ref('references/').on('value', (snapshot) => {
-            referencesDiv.innerHTML = '';
-            snapshot.forEach((childSnapshot) => {
-                const data = childSnapshot.val();
-                const div = document.createElement('div');
-                div.className = 'reference';
-                div.innerHTML = `
-                    <p><strong>Profesor:</strong> ${data.professor}</p>
-                    <p><strong>Carrera:</strong> ${data.career}</p>
-                    <p><strong>Semestre:</strong> ${data.semester}</p>
-                    <p><strong>Materia:</strong> ${data.subject}</p>
-                    <p><strong>Puntuación:</strong> ${data.rating}</p>
-                    <p><strong>Referencia:</strong> ${data.reference}</p>
+            document.getElementById('referenceForm').reset();
+        }
+
+        function displayReferences(filtered) {
+            const container = document.getElementById('references');
+            container.innerHTML = '<h2>Referencias</h2>';
+            filtered.forEach(ref => {
+                container.innerHTML += `
+                    <div class="reference">
+                        <p><strong>Profesor:</strong> ${ref.professor}</p>
+                        <p><strong>Carrera:</strong> ${ref.career}</p>
+                        <p><strong>Semestre:</strong> ${ref.semester}</p>
+                        <p><strong>Materia:</strong> ${ref.subject}</p>
+                        <p><strong>Puntuación:</strong> ${ref.rating}</p>
+                        <p><strong>Referencia:</strong> ${ref.referenceText}</p>
+                    </div>
                 `;
-                referencesDiv.appendChild(div);
             });
-        });
+        }
+
+        function searchReferences() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const filtered = references.filter(ref => ref.professor.toLowerCase().includes(query));
+            displayReferences(filtered);
+        }
+
+        function containsBadWords(text) {
+            const badWords = ["maldición1", "maldición2", "maldición3"]; // Agrega aquí palabras prohibidas
+            return badWords.some(word => text.toLowerCase().includes(word));
+        }
     </script>
 </body>
-</html>
