@@ -1,12 +1,19 @@
 // Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD2E_JzHJMNZKDFNLcAClrFeyW-Hnk7fDw",
+
   authDomain: "scoreprof-868fa.firebaseapp.com",
+
   databaseURL: "https://scoreprof-868fa-default-rtdb.firebaseio.com",
+
   projectId: "scoreprof-868fa",
+
   storageBucket: "scoreprof-868fa.firebasestorage.app",
+
   messagingSenderId: "358086157332",
+
   appId: "1:358086157332:web:2b87e54ab3352389033301",
+
   measurementId: "G-LNM7XNSZXT"
 };
 
@@ -19,7 +26,7 @@ const form = document.getElementById("referenceForm");
 const referenceList = document.getElementById("referenceList");
 const searchInput = document.getElementById("searchBar");
 
-// Función para cargar referencias desde Firebase
+// Cargar referencias desde Firebase
 function loadReferences() {
   db.ref("references").on("value", (snapshot) => {
     referenceList.innerHTML = ""; // Limpiar la lista
@@ -30,11 +37,11 @@ function loadReferences() {
       references.push(ref);
     });
 
-    displayReferences(references);
+    displayReferences(references); // Mostrar referencias en la página
   });
 }
 
-// Función para mostrar las referencias
+// Mostrar las referencias
 function displayReferences(references) {
   referenceList.innerHTML = ""; // Limpiar antes de mostrar
 
@@ -45,11 +52,11 @@ function displayReferences(references) {
     referenceList.appendChild(li);
   });
 
-  // Vincular la barra de búsqueda
+  // Configurar búsqueda en tiempo real
   setupSearch();
 }
 
-// Función para buscar profesores
+// Configurar la barra de búsqueda (Enter incluido)
 function setupSearch() {
   const referenceItems = document.querySelectorAll(".reference-item");
 
@@ -64,9 +71,15 @@ function setupSearch() {
       }
     });
   });
+
+  searchInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Evitar que recargue la página
+    }
+  });
 }
 
-// Guardar una nueva referencia en Firebase
+// Guardar una referencia en Firebase
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -94,5 +107,5 @@ form.addEventListener("submit", (e) => {
   });
 });
 
-// Cargar referencias al inicio
+// Cargar las referencias al iniciar
 window.onload = loadReferences;
