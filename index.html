@@ -58,26 +58,27 @@
   </header>
 
   <div class="container">
-    <form id="referenceForm">
-      <input type="text" id="professor" placeholder="Nombre del profesor" required>
-      <input type="text" id="career" placeholder="Carrera" required>
-      <input type="text" id="semester" placeholder="Semestre" required>
-      <input type="text" id="subject" placeholder="Materia impartida" required>
-      <input type="number" id="rating" placeholder="Puntuación (1-10)" min="1" max="10" required>
-      <textarea id="reference" placeholder="Escribe tu referencia" rows="3" required></textarea>
-      <button type="submit">Enviar</button>
-    </form>
-    <div class="references">
-      <h2>Últimas referencias</h2>
-      <ul id="referenceList"></ul>
-    </div>
+<form id="referenceForm">
+  <input type="text" id="professor" placeholder="Nombre del profesor" required>
+  <input type="text" id="career" placeholder="Carrera" required>
+  <input type="text" id="semester" placeholder="Semestre" required>
+  <input type="text" id="subject" placeholder="Materia impartida" required>
+  <input type="number" id="rating" placeholder="Puntuación (1-10)" min="1" max="10" required>
+  <textarea id="reference" placeholder="Escribe tu referencia" rows="3" required></textarea>
+  <button type="submit">Enviar</button>
+</form>
+
+<div class="references">
+  <h2>Últimas referencias</h2>
+  <ul id="referenceList"></ul>
+</div>
+
   </div>
 
   <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js"></script>
+<script src="app.js"></script>
 
-  <!-- Script principal -->
-  <script src="app.js"></script>
 </body>
 </html>
