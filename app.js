@@ -1,23 +1,26 @@
-// Configuración de Firebase
-const firebaseConfig = {
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  apiKey: "AIzaSyD2E_JzHJMNZKDFNLcAClrFeyW-Hnk7fDw",
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyA8bo5qHaeIEU00B5gYl4b_JFYgc34kqYc",
+    authDomain: "scoreprof-5522f.firebaseapp.com",
+    projectId: "scoreprof-5522f",
+    storageBucket: "scoreprof-5522f.firebasestorage.app",
+    messagingSenderId: "316677905542",
+    appId: "1:316677905542:web:0e4fa80099289beaf38507",
+    measurementId: "G-ZJ5XWJWL1L"
+  };
 
-  authDomain: "scoreprof-868fa.firebaseapp.com",
-
-  databaseURL: "https://scoreprof-868fa-default-rtdb.firebaseio.com",
-
-  projectId: "scoreprof-868fa",
-
-  storageBucket: "scoreprof-868fa.firebasestorage.app",
-
-  messagingSenderId: "358086157332",
-
-  appId: "1:358086157332:web:2b87e54ab3352389033301",
-
-  measurementId: "G-LNM7XNSZXT"
-
-};
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 
 // Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
