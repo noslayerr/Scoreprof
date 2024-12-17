@@ -2,6 +2,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyD2E_JzHJMNZKDFNLcAClrFeyW-Hnk7fDw",
   authDomain: "scoreprof-868fa.firebaseapp.com",
+  databaseURL: "https://scoreprof-868fa-default-rtdb.firebaseio.com",
   projectId: "scoreprof-868fa",
   storageBucket: "scoreprof-868fa.firebasestorage.app",
   messagingSenderId: "358086157332",
@@ -9,50 +10,63 @@ const firebaseConfig = {
   measurementId: "G-LNM7XNSZXT"
 };
 
-
 // Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Cargar referencias al inicio
-window.onload = loadReferences;
+// Elementos del DOM
+const form = document.getElementById("referenceForm");
+const referenceList = document.getElementById("referenceList");
+const searchInput = document.getElementById("searchBar");
 
-// Función para cargar todas las referencias
+// Función para cargar referencias desde Firebase
 function loadReferences() {
-  const referenceList = document.getElementById("referenceList");
-  referenceList.innerHTML = ""; // Limpiar la lista
-
   db.ref("references").on("value", (snapshot) => {
-    referenceList.innerHTML = ""; // Limpiar cada vez que se actualicen los datos
+    referenceList.innerHTML = ""; // Limpiar la lista
+    const references = [];
+
     snapshot.forEach((childSnapshot) => {
       const ref = childSnapshot.val();
-      const li = document.createElement("li");
-      li.className = "reference-item";
-      li.textContent = `${ref.professor} - ${ref.subject} - ${ref.career} - Semestre: ${ref.semester} - Puntuación: ${ref.rating} - ${ref.reference}`;
-      referenceList.appendChild(li);
+      references.push(ref);
+    });
+
+    displayReferences(references);
+  });
+}
+
+// Función para mostrar las referencias
+function displayReferences(references) {
+  referenceList.innerHTML = ""; // Limpiar antes de mostrar
+
+  references.forEach((ref) => {
+    const li = document.createElement("li");
+    li.className = "reference-item";
+    li.textContent = `${ref.professor} - ${ref.subject} - ${ref.career} - Semestre: ${ref.semester} - Puntuación: ${ref.rating} - ${ref.reference}`;
+    referenceList.appendChild(li);
+  });
+
+  // Vincular la barra de búsqueda
+  setupSearch();
+}
+
+// Función para buscar profesores
+function setupSearch() {
+  const referenceItems = document.querySelectorAll(".reference-item");
+
+  searchInput.addEventListener("input", () => {
+    const searchValue = searchInput.value.toLowerCase();
+
+    referenceItems.forEach((item) => {
+      if (item.textContent.toLowerCase().includes(searchValue)) {
+        item.style.display = "block";
+      } else {
+        item.style.display = "none";
+      }
     });
   });
 }
 
-// Función para buscar referencias en tiempo real
-const searchInput = document.getElementById("searchBar");
-searchInput.addEventListener("input", () => {
-  const searchValue = searchInput.value.toLowerCase();
-  const referenceItems = document.querySelectorAll(".reference-item");
-
-  referenceItems.forEach((item) => {
-    if (item.textContent.toLowerCase().includes(searchValue)) {
-      item.style.display = "block";
-    } else {
-      item.style.display = "none";
-    }
-  });
-});
-
-// Referencia al formulario
-const form = document.getElementById("referenceForm");
-
-// Función para guardar referencia
+// Guardar una nueva referencia en Firebase
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -63,7 +77,6 @@ form.addEventListener("submit", (e) => {
   const rating = document.getElementById("rating").value;
   const reference = document.getElementById("reference").value;
 
-  // Guardar en Firebase
   db.ref("references").push({
     professor,
     career,
@@ -80,3 +93,6 @@ form.addEventListener("submit", (e) => {
     alert("Error al guardar la referencia.");
   });
 });
+
+// Cargar referencias al inicio
+window.onload = loadReferences;
