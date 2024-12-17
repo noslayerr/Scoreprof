@@ -4,200 +4,80 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Scoreprof</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Estilos de la página -->
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
     }
-
-    .header {
+    header {
       background-color: #28a745;
       color: white;
-      padding: 20px;
+      padding: 10px 0;
       text-align: center;
     }
-
-    .btn-custom {
+    .container {
+      width: 90%;
+      max-width: 600px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    input, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
       background-color: #28a745;
       color: white;
       border: none;
+      cursor: pointer;
     }
-
-    .btn-custom:hover {
+    button:hover {
       background-color: #218838;
     }
-
-    .reference-card {
-      margin-bottom: 15px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      background-color: #fff;
+    .references {
+      margin-top: 20px;
+    }
+    h2 {
+      color: #28a745;
     }
   </style>
 </head>
 <body>
-  <div class="header">
+  <header>
     <h1>Scoreprof</h1>
     <p>Consulta y comparte referencias de tus profesores</p>
-  </div>
+  </header>
 
-  <div class="container mt-4">
-    <!-- Barra de búsqueda -->
-    <div class="form-inline mb-4">
-      <input type="text" id="searchBar" class="form-control mr-2" placeholder="Buscar profesor por nombre">
-      <button class="btn btn-custom" onclick="searchProfessor()">Buscar</button>
-    </div>
-
-    <!-- Formulario -->
-    <form id="referenceForm" onsubmit="saveReference(event)">
-      <input type="text" id="professor" class="form-control mb-3" placeholder="Nombre del profesor" required>
-      <input type="text" id="career" class="form-control mb-3" placeholder="Carrera" required>
-      <input type="text" id="semester" class="form-control mb-3" placeholder="Semestre" required>
-      <input type="text" id="subject" class="form-control mb-3" placeholder="Materia impartida" required>
-      <input type="number" id="rating" class="form-control mb-3" placeholder="Puntuación (1-10)" min="1" max="10" required>
-      <textarea id="reference" class="form-control mb-3" placeholder="Escribe tu referencia" rows="4" required></textarea>
-      <button type="submit" class="btn btn-custom btn-block">Enviar</button>
+  <div class="container">
+    <form id="referenceForm">
+      <input type="text" id="professor" placeholder="Nombre del profesor" required>
+      <input type="text" id="career" placeholder="Carrera" required>
+      <input type="text" id="semester" placeholder="Semestre" required>
+      <input type="text" id="subject" placeholder="Materia impartida" required>
+      <input type="number" id="rating" placeholder="Puntuación (1-10)" min="1" max="10" required>
+      <textarea id="reference" placeholder="Escribe tu referencia" rows="3" required></textarea>
+      <button type="submit">Enviar</button>
     </form>
-
-    <!-- Sección Últimas Referencias -->
-    <div class="mt-4">
-      <h3>Últimas Referencias</h3>
-      <div id="latestReferences"></div>
-    </div>
-
-    <!-- Botón para Ver Todas las Referencias -->
-    <div class="text-center mt-4">
-      <button class="btn btn-custom" onclick="showAllReferences()">Ver Todas las Referencias</button>
-    </div>
-
-    <!-- Sección Todas las Referencias -->
-    <div id="allReferences" class="mt-4" style="display: none;">
-      <h3>Todas las Referencias</h3>
-      <div id="allReferencesList"></div>
+    <div class="references">
+      <h2>Últimas referencias</h2>
+      <ul id="referenceList"></ul>
     </div>
   </div>
 
-<!-- Firebase App y Database -->
-<script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js"></script>
 
-  <!-- Script -->
-  <script>
-    // Configuración de Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyBbs6OenMM4YEyI5XqImQTTv7E3T2qZz20",
-      authDomain: "scoreprof-fcd49.firebaseapp.com",
-      databaseURL: "https://scoreprof-fcd49.firebaseio.com",
-      projectId: "scoreprof-fcd49",
-      storageBucket: "scoreprof-fcd49.appspot.com",
-      messagingSenderId: "950473047848",
-      appId: "1:950473047848:web:83d74bffc27719f9a39a1d"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-function saveReference(event) {
-  event.preventDefault();
-  console.log("Botón Enviar presionado");
-
-  const professor = document.getElementById("professor").value;
-  const career = document.getElementById("career").value;
-  const semester = document.getElementById("semester").value;
-  const subject = document.getElementById("subject").value;
-  const rating = document.getElementById("rating").value;
-  const reference = document.getElementById("reference").value;
-
-  console.log({ professor, career, semester, subject, rating, reference });
-
-  // Enviar a Firebase
-  db.ref("references").push({
-    professor,
-    career,
-    semester,
-    subject,
-    rating,
-    reference,
-    timestamp: new Date().toISOString()
-  }).then(() => {
-    alert("Referencia guardada correctamente.");
-    document.getElementById("referenceForm").reset();
-    loadLatestReferences();
-  }).catch((error) => {
-    console.error("Error al enviar referencia: ", error);
-    alert("Hubo un error al enviar la referencia.");
-  });
-}
-
-    // Cargar últimas referencias
-    function loadLatestReferences() {
-      const latestDiv = document.getElementById("latestReferences");
-      latestDiv.innerHTML = "";
-
-      db.ref("references").limitToLast(3).once("value", snapshot => {
-        snapshot.forEach(child => {
-          const data = child.val();
-          latestDiv.innerHTML += `
-            <div class="reference-card">
-              <strong>${data.professor}</strong> (${data.subject})<br>
-              <small>${data.career} - Semestre ${data.semester}</small>
-              <p>Puntuación: ${data.rating}</p>
-              <p>${data.reference}</p>
-            </div>
-          `;
-        });
-      });
-    }
-
-    // Mostrar todas las referencias
-    function showAllReferences() {
-      const allDiv = document.getElementById("allReferencesList");
-      document.getElementById("allReferences").style.display = "block";
-      allDiv.innerHTML = "";
-
-      db.ref("references").once("value", snapshot => {
-        snapshot.forEach(child => {
-          const data = child.val();
-          allDiv.innerHTML += `
-            <div class="reference-card">
-              <strong>${data.professor}</strong> (${data.subject})<br>
-              <small>${data.career} - Semestre ${data.semester}</small>
-              <p>Puntuación: ${data.rating}</p>
-              <p>${data.reference}</p>
-            </div>
-          `;
-        });
-      });
-    }
-
-    // Búsqueda por nombre de profesor
-    function searchProfessor() {
-      const searchValue = document.getElementById("searchBar").value.toLowerCase();
-      const allDiv = document.getElementById("allReferencesList");
-      document.getElementById("allReferences").style.display = "block";
-      allDiv.innerHTML = "";
-
-      db.ref("references").once("value", snapshot => {
-        snapshot.forEach(child => {
-          const data = child.val();
-          if (data.professor.toLowerCase().includes(searchValue)) {
-            allDiv.innerHTML += `
-              <div class="reference-card">
-                <strong>${data.professor}</strong> (${data.subject})<br>
-                <small>${data.career} - Semestre ${data.semester}</small>
-                <p>Puntuación: ${data.rating}</p>
-                <p>${data.reference}</p>
-              </div>
-            `;
-          }
-        });
-      });
-    }
-
-    // Cargar referencias iniciales
-    window.onload = loadLatestReferences;
-  </script>
+  <!-- Script principal -->
+  <script src="app.js"></script>
 </body>
 </html>
