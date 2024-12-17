@@ -79,9 +79,9 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js"></script>
+<!-- Firebase App y Database -->
+<script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js"></script>
 
   <!-- Script -->
   <script>
@@ -99,31 +99,37 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Guardar referencia
-    function saveReference(event) {
-      event.preventDefault();
+function saveReference(event) {
+  event.preventDefault();
+  console.log("Botón Enviar presionado");
 
-      const professor = document.getElementById("professor").value;
-      const career = document.getElementById("career").value;
-      const semester = document.getElementById("semester").value;
-      const subject = document.getElementById("subject").value;
-      const rating = document.getElementById("rating").value;
-      const reference = document.getElementById("reference").value;
+  const professor = document.getElementById("professor").value;
+  const career = document.getElementById("career").value;
+  const semester = document.getElementById("semester").value;
+  const subject = document.getElementById("subject").value;
+  const rating = document.getElementById("rating").value;
+  const reference = document.getElementById("reference").value;
 
-      db.ref("references").push({
-        professor,
-        career,
-        semester,
-        subject,
-        rating,
-        reference,
-        timestamp: new Date().toISOString()
-      }).then(() => {
-        alert("Referencia guardada correctamente.");
-        document.getElementById("referenceForm").reset();
-        loadLatestReferences();
-      });
-    }
+  console.log({ professor, career, semester, subject, rating, reference });
+
+  // Enviar a Firebase
+  db.ref("references").push({
+    professor,
+    career,
+    semester,
+    subject,
+    rating,
+    reference,
+    timestamp: new Date().toISOString()
+  }).then(() => {
+    alert("Referencia guardada correctamente.");
+    document.getElementById("referenceForm").reset();
+    loadLatestReferences();
+  }).catch((error) => {
+    console.error("Error al enviar referencia: ", error);
+    alert("Hubo un error al enviar la referencia.");
+  });
+}
 
     // Cargar últimas referencias
     function loadLatestReferences() {
