@@ -9,9 +9,45 @@ const firebaseConfig = {
   measurementId: "G-LNM7XNSZXT"
 };
 
+
 // Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+
+// Cargar referencias al inicio
+window.onload = loadReferences;
+
+// Función para cargar todas las referencias
+function loadReferences() {
+  const referenceList = document.getElementById("referenceList");
+  referenceList.innerHTML = ""; // Limpiar la lista
+
+  db.ref("references").on("value", (snapshot) => {
+    referenceList.innerHTML = ""; // Limpiar cada vez que se actualicen los datos
+    snapshot.forEach((childSnapshot) => {
+      const ref = childSnapshot.val();
+      const li = document.createElement("li");
+      li.className = "reference-item";
+      li.textContent = `${ref.professor} - ${ref.subject} - ${ref.career} - Semestre: ${ref.semester} - Puntuación: ${ref.rating} - ${ref.reference}`;
+      referenceList.appendChild(li);
+    });
+  });
+}
+
+// Función para buscar referencias en tiempo real
+const searchInput = document.getElementById("searchBar");
+searchInput.addEventListener("input", () => {
+  const searchValue = searchInput.value.toLowerCase();
+  const referenceItems = document.querySelectorAll(".reference-item");
+
+  referenceItems.forEach((item) => {
+    if (item.textContent.toLowerCase().includes(searchValue)) {
+      item.style.display = "block";
+    } else {
+      item.style.display = "none";
+    }
+  });
+});
 
 // Referencia al formulario
 const form = document.getElementById("referenceForm");
@@ -39,27 +75,8 @@ form.addEventListener("submit", (e) => {
   }).then(() => {
     alert("Referencia guardada correctamente.");
     form.reset();
-    loadReferences(); // Actualizar las últimas referencias
   }).catch((error) => {
     console.error("Error: ", error);
     alert("Error al guardar la referencia.");
   });
 });
-
-// Función para cargar referencias
-function loadReferences() {
-  const referenceList = document.getElementById("referenceList");
-  referenceList.innerHTML = ""; // Limpiar la lista
-
-  db.ref("references").limitToLast(5).on("value", (snapshot) => {
-    snapshot.forEach((childSnapshot) => {
-      const ref = childSnapshot.val();
-      const li = document.createElement("li");
-      li.textContent = `${ref.professor} - ${ref.subject} - Puntuación: ${ref.rating}`;
-      referenceList.appendChild(li);
-    });
-  });
-}
-
-// Cargar referencias al inicio
-window.onload = loadReferences;
