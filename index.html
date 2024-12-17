@@ -4,71 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Scoreprof</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-    }
-
-    .header {
-      background-color: #4CAF50;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-    }
-
-    .container {
-      padding: 2rem;
-    }
-
-    .search-section {
-      margin-bottom: 1rem;
-    }
-
-    input, textarea, button {
-      display: block;
-      margin: 0.5rem 0;
-      padding: 0.5rem;
-      width: 100%;
-      max-width: 600px;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .reference-item {
-      background-color: white;
-      margin: 0.5rem 0;
-      padding: 1rem;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-      width: 200px;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="header">Scoreprof</div>
   <div class="container">
-    <!-- Sección de búsqueda -->
-    <div class="search-section">
-      <input type="text" id="searchBar" placeholder="Buscar profesor por nombre">
-    </div>
+    <h1>Scoreprof</h1>
+    <p>Consulta y comparte referencias de tus profesores</p>
+
+    <!-- Barra de búsqueda -->
+    <input type="text" id="searchBar" placeholder="Buscar profesor por nombre">
 
     <!-- Formulario para agregar referencias -->
     <form id="referenceForm">
@@ -77,16 +21,16 @@
       <input type="text" id="semester" placeholder="Semestre" required>
       <input type="text" id="subject" placeholder="Materia impartida" required>
       <input type="number" id="rating" placeholder="Puntuación (1-10)" min="1" max="10" required>
-      <textarea id="reference" placeholder="Escribe tu referencia" rows="3" required></textarea>
+      <textarea id="reference" placeholder="Escribe tu referencia" required></textarea>
       <button type="submit">Enviar</button>
     </form>
 
-    <!-- Lista de referencias -->
-    <h2>Referencias</h2>
+    <!-- Sección para mostrar referencias -->
+    <h2>Últimas Referencias</h2>
     <ul id="referenceList"></ul>
   </div>
 
-  <!-- Firebase -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js"></script>
   <script src="app.js"></script>
